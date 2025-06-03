@@ -1,0 +1,25 @@
+{
+  "name": "cse341-project2",
+  "version": "1.0.0",
+  "description": "Project 2",
+  "keywords": [],
+  "homepage": "https://github.com/tafadzwabchingore/cse341-project2#readme",
+  "bugs": {
+    "url": "https://github.com/tafadzwabchingore/cse341-project2/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tafadzwabchingore/cse341-project2.git"
+  },
+  "license": "ISC",
+  "author": "Tafadzwa Chingore",
+  "type": "git",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "mongodb": "^6.16.0"
+  },
+  "devDependencies": {}
+}
