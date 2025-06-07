@@ -6,7 +6,7 @@ const doc = {
     title: 'Farm Goods API',
     description: 'API for selling farm products',
   },
-  host: 'localhost:3000', // change this if deploying to Render or elsewhere
+  host: 'localhost:2025', // change this if deploying to Render or elsewhere
   schemes: ['http'],
 };
 
