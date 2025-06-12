@@ -16,16 +16,19 @@
   "type": "git",
   "main": "server.js",
   "scripts": {
-  "test": "node server.js",
-  "generate-swagger": "node swagger.js",
-  "postinstall": "npm run generate-swagger"
-},
+    "test": "node server.js",
+    "generate-swagger": "node swagger.js",
+    "postinstall": "npm run generate-swagger"
+  },
   "dependencies": {
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "express-session": "^1.18.1",
     "mongodb": "^6.16.0",
+    "passport": "^0.7.0",
+    "passport-github2": "^0.1.12",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
   },

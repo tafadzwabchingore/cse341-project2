@@ -2,14 +2,16 @@ const router = require('express').Router();
 
 const productsController = require('../controllers/products.js');
 
+const { isAuthenticated } = require("../middleware/authenticate");
+
 router.get('/', productsController.getAll);
 
 router.get('/:id', productsController.getSingle);
 
-router.post('/', productsController.createProduct); //used to create something
+router.post('/', isAuthenticated, productsController.createProduct); //used to create something
 
-router.put('/:id', productsController.updateProduct); //Put/Patch used to update. Can be used interchangebly
+router.put('/:id', isAuthenticated, productsController.updateProduct); //Put/Patch used to update. Can be used interchangebly
 
-router.delete('/:id', productsController.deleteProduct); //removing something
+router.delete('/:id', isAuthenticated, productsController.deleteProduct); //removing something
 
 module.exports = router;
