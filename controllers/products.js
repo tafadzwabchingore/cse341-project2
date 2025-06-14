@@ -6,9 +6,6 @@ const getAll = async (req, res) => {
     try {
         const result = await mongodb.getDatabase().collection('products').find();
         const products = await result.toArray();
-        //products.forEach(p => {
-            //p.price = `$${p.price.toFixed(2)}`;
-        //});
         res.setHeader('Content-Type', 'application/json');
         res.status(200).json(products);
     } catch (err) {
@@ -61,7 +58,7 @@ const updateProduct = async (req, res) => {
             price: req.body.price,
             unit: req.body.unit,
             quantityAvailable: req.body.quantityAvailable,
-            description: req.body.description,
+            description: req.body.description
         };
         const response = await mongodb.getDatabase().collection('products').replaceOne({ _id: productId }, product);
         if (response.modifiedCount > 0) {

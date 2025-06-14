@@ -13,7 +13,7 @@ const initDb = (callback) => {
 
     MongoClient.connect(process.env.MONGODB_URL)
         .then((client) => {
-            database = client.db(); // 👈 Use .db() to get the actual database
+            database = client.db('project2'); // 👈 Use .db() to get the actual database
             console.log(`DB connected to: ${database.databaseName}`);
             callback(null, database);
         })
