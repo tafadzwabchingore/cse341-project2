@@ -7,15 +7,11 @@
   },
   "host": "localhost:2025",
   "basePath": "/",
-  "schemes": [
-    "http"
-  ],
+  "schemes": ["http"],
   "paths": {
     "/": {
       "get": {
-        "tags": [
-          "Hello World"
-        ],
+        "tags": ["Hello World"],
         "description": "",
         "responses": {
           "200": {
@@ -30,6 +26,290 @@
         "responses": {
           "default": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/farmers": {
+      "get": {
+        "tags": ["Farmers"],
+        "summary": "Get all farmers",
+        "responses": {
+          "200": {
+            "description": "List of all farmers",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Farmer"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Farmers"],
+        "summary": "Create a farmer",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "farmer",
+            "description": "Farmer to create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Farmer"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Farmer created",
+            "schema": {
+              "$ref": "#/definitions/Farmer"
+            }
+          }
+        }
+      }
+    },
+    "/farmers/{id}": {
+      "get": {
+        "tags": ["Farmers"],
+        "summary": "Get a single farmer by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Farmer found",
+            "schema": {
+              "$ref": "#/definitions/Farmer"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Farmers"],
+        "summary": "Update a farmer by ID",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "farmer",
+            "description": "Farmer data to update",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Farmer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Farmer updated",
+            "schema": {
+              "$ref": "#/definitions/Farmer"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Farmers"],
+        "summary": "Delete a farmer by ID",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Farmer deleted"
+          }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get all products",
+        "responses": {
+          "200": {
+            "description": "List of all products",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Product"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Products"],
+        "summary": "Create a product",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "product",
+            "description": "Product to create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Product"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Product created",
+            "schema": {
+              "$ref": "#/definitions/Product"
+            }
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get a single product by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product found",
+            "schema": {
+              "$ref": "#/definitions/Product"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Products"],
+        "summary": "Update a product by ID",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "product",
+            "description": "Product data to update",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Product"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product updated",
+            "schema": {
+              "$ref": "#/definitions/Product"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Products"],
+        "summary": "Delete a product by ID",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Product deleted"
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "BearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "definitions": {
+    "Product": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "60f7c2e4d5f1a1b1c8d1e2f3"
+        },
+        "name": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "quantityAvailable": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "Farmer": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
