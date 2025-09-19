@@ -1,0 +1,34 @@
+//LOCALHOST
+### Get all authors
+GET http://localhost:3000/api/authors
+
+### Get authors by id
+GET http://localhost:3000/api/authors/68cd0699820076f956e9ae39
+
+### Create author
+POST http://localhost:3000/api/authors HTTP/1.1
+content-type: application/json
+
+{
+  "name": "Chinua Achebe",
+  "bio": "Nigerian novelist, poet, professor, and critic.",
+  "birthdate": "1930-11-16T00:00:00.000Z",
+  "nationality": "Nigerian",
+  "website": "https://www.chinuaachebe.org"
+}
+
+### PUT author
+PUT http://localhost:3000/api/authors/68cd06da820076f956e9ae3d HTTP/1.1
+content-type: application/json
+
+{
+  "name": "Ngũgĩ wa Thiong'o",
+  "bio": "KENYAN writer and academic, known for works in Gikuyu and English.",
+  "birthdate": "1938-01-05T00:00:00.000Z",
+  "nationality": "Kenyan",
+  "website": "https://ngugiwathiongo.com",
+  "id": "68cd06da820076f956e9ae3d"
+}
+
+### DELETE contact
+DELETE  http://localhost:3000/api/authors/68cd3ceff53cd85b8ea20f3b
