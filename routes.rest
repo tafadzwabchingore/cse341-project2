@@ -32,3 +32,47 @@ content-type: application/json
 
 ### DELETE contact
 DELETE  http://localhost:3000/api/authors/68cd3ceff53cd85b8ea20f3b
+
+//Books
+
+//LOCALHOST
+### Get all authors
+GET http://localhost:3000/api/books
+
+### Get authors by id
+GET http://localhost:3000/api/books/68cd2aebda115faf73f97f54
+
+### Create author
+POST http://localhost:3000/api/books HTTP/1.1
+content-type: application/json
+
+  {
+    "title": "Glory",
+    "author": "68cd07c2820076f956e9ae41",
+    "genre": "Satire / Political Allegory",
+    "publishedDate": "2022-05-03T00:00:00.000Z",
+    "pages": 416,
+    "price": 19.99,
+    "inStock": true,
+    "description": "An allegorical novel inspired by Zimbabwe’s political history, using animals as characters."
+  }
+
+
+### PUT author
+PUT http://localhost:3000/api/books/68ce58645e8746d0ed2049dd HTTP/1.1
+content-type: application/json
+
+{
+  "title": "GLORY",
+  "author": "68cd07c2820076f956e9ae41",
+  "genre": "Satire / Political Allegory",
+  "publishedDate": "2022-05-03T00:00:00.000Z",
+  "pages": 416,
+  "price": 19.99,
+  "inStock": true,
+  "description": "An allegorical novel inspired by Zimbabwe’s political history, using animals as characters.",
+  "id": "68ce58645e8746d0ed2049dd"
+}
+
+### DELETE contact
+DELETE  http://localhost:3000/api/books/68ce58645e8746d0ed2049dd
