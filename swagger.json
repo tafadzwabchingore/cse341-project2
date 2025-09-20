@@ -5,7 +5,7 @@
     "description": "API documentation for Authors and Books",
     "version": "1.0.0"
   },
-  "host": "https://project2-n69z.onrender.com",
+  "host": "project2-n69z.onrender.com",
   "basePath": "/",
   "schemes": [
     "https"
