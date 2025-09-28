@@ -5,15 +5,10 @@
     "version": "1.0.0",
     "description": "API documentation for the Bookstore project (Users, Authors, and Books)."
   },
-  "servers": [
-    {
-      "url": "http://localhost:3001",
-      "description": "Local server"
-    },
-    {
-      "url": "https://project2-n69z.onrender.com",
-      "description": "Production server"
-    }
+  "host": "project2-n69z.onrender.com",
+  "basePath": "/",
+  "schemes": [
+    "https"
   ],
   "paths": {
     "/api/users/register": {
