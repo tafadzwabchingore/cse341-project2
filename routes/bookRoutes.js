@@ -1,84 +1,80 @@
-const express = require('express');
+const express = require("express");
+const { body } = require("express-validator");
 const router = express.Router();
-const Book = require('../models/Book');
-const Author = require('../models/Author');
 
-// GET all books
-router.get('/', async (req, res, next) => {
-  try {
-    const books = await Book.find(req.params.id);
-    res.json(books);
-  } catch (err) {
-    next(err);
-  }
-});
+const {
+  getAllBooks,
+  getBookById,
+  createBook,
+  updateBook,
+  deleteBook,
+} = require("../controllers/bookController");
 
-// GET book by id
-router.get('/:id', async (req, res, next) => {
-  try {
-    const books = await Book.findById(req.params.id);
-    if (!books) return res.status(404).json({ error: 'Book not found' });
-    res.json(books);
-  } catch (err) {
-    next(err);
-  }
-});
+const { protect, authorize } = require("../middleware/authMiddleware");
 
-// POST new books
-router.post('/', async (req, res, next) => {
-  try {
-    const { title, author, genre, publishedDate, pages, price, inStock, description } = req.body;
+// -------------------
+// Public routes
+// -------------------
+router.get("/", getAllBooks);
+router.get("/:id", getBookById);
 
-    if (!title || !author || !genre || !publishedDate || !pages || !price || !inStock || !description) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
+// -------------------
+// Protected routes (Admin only)
+// -------------------
 
-    // Check if author exists
-    const authorExists = await Author.findById(author);
-    if (!authorExists) return res.status(400).json({ error: 'Author not found' });
+// Create book
+router.post(
+  "/",
+  protect,
+  authorize("admin"),
+  [
+    body("title")
+      .notEmpty()
+      .withMessage("Title is required"),
+    body("authorId")
+      .notEmpty()
+      .withMessage("Author ID is required")
+      .isMongoId()
+      .withMessage("Author ID must be a valid Mongo ID"),
+    body("publishedYear")
+      .optional()
+      .isInt({ min: 0 })
+      .withMessage("Published year must be a valid number"),
+    body("genre")
+      .optional()
+      .isString()
+      .withMessage("Genre must be a string"),
+  ],
+  createBook
+);
 
-    const newBook = new Book({ title, author, genre, publishedDate, pages, price, inStock, description });
-    const savedBook = await newBook.save();
-    res.status(201).json(savedBook);
-  } catch (err) {
-    next(err);
-  }
-});
+// Update book
+router.put(
+  "/:id",
+  protect,
+  authorize("admin"),
+  [
+    body("title")
+      .optional()
+      .notEmpty()
+      .withMessage("Title cannot be empty"),
+    body("authorId")
+      .optional()
+      .isMongoId()
+      .withMessage("Author ID must be a valid Mongo ID"),
+    body("publishedYear")
+      .optional()
+      .isInt({ min: 0 })
+      .withMessage("Published year must be a valid number"),
+    body("genre")
+      .optional()
+      .isString()
+      .withMessage("Genre must be a string"),
+  ],
+  updateBook
+);
 
-// PUT update book
-router.put('/:id', async (req, res, next) => {
-  try {
-    const { title, author, genre, publishedDate, pages, price, inStock, description } = req.body;
-
-    if (!title || !author || !genre || !publishedDate || !pages || !price || !inStock || !description) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
-
-    const authorExists = await Author.findById(author);
-    if (!authorExists) return res.status(400).json({ error: 'Author not found' });
-
-    const updatedBook = await Book.findByIdAndUpdate(
-      req.params.id,
-      { title, author, genre, publishedDate, pages, price, inStock, description },
-      { new: true }
-    );
-
-    if (!updatedBook) return res.status(404).json({ error: 'Book not found' });
-    res.json(updatedBook);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// DELETE book
-router.delete('/:id', async (req, res, next) => {
-  try {
-    const deletedBook = await Book.findByIdAndDelete(req.params.id);
-    if (!deletedBook) return res.status(404).json({ error: 'Book not found' });
-    res.json({ message: 'Book deleted successfully' });
-  } catch (err) {
-    next(err);
-  }
-});
+// Delete book
+router.delete("/:id", protect, authorize("admin"), deleteBook);
 
 module.exports = router;

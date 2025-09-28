@@ -11,12 +11,4 @@ const bookSchema = new mongoose.Schema({
   description: { type: String, required: true }
 });
 
-bookSchema.set("toJSON", {
-  versionKey: false,
-  transform: (doc, ret) => {
-    ret.id = ret._id;
-    delete ret._id;
-  }
-});
-
 module.exports = mongoose.model("Book", bookSchema);

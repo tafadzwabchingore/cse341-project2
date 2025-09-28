@@ -1,121 +1,106 @@
+const { validationResult } = require("express-validator");
 const Book = require("../models/Book");
-const Author = require("../models/Author");
 
-// GET all books
+// -------------------
+// @desc    Get all books
+// @route   GET /api/books
+// @access  Public
+// -------------------
 exports.getAllBooks = async (req, res) => {
   try {
-    const books = await Book.find(req.params.id);
+    const books = await Book.find().populate("authorId", "name");
     res.status(200).json(books);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-// GET a single book by ID
+// -------------------
+// @desc    Get book by ID
+// @route   GET /api/books/:id
+// @access  Public
+// -------------------
 exports.getBookById = async (req, res) => {
   try {
-    //const books = await Book.findById(req.params.id).populate("author", "name");
-    const books = await Book.findById(req.params.id);
-    if (!books) return res.status(404).json({ error: "Book not found" });
-    res.status(200).json(books);
+    const book = await Book.findById(req.params.id).populate("authorId", "name");
+    if (!book) {
+      return res.status(404).json({ error: "Book not found" });
+    }
+    res.status(200).json(book);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-// CREATE a new book
+// -------------------
+// @desc    Create new book
+// @route   POST /api/books
+// @access  Private/Admin
+// -------------------
 exports.createBook = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
-    const {
-      title,
-      author,
-      genre,
-      publishedDate,
-      pages,
-      price, 
-      inStock, 
-      description,
-    } = req.body;
+    const { title, authorId, publishedYear, genre } = req.body;
 
-    // Validate required fields strictly
-    const requiredFields = { title, author, genre, publishedDate, pages, price, inStock, description };
-    for (const [key, value] of Object.entries(requiredFields)) {
-      if (value === undefined || value === null || value === "") {
-        return res.status(400).json({ error: `${key} is required` });
-      }
-    }
-
-    const newBook = new Book({
+    const book = await Book.create({
       title,
-      author,
+      authorId,
+      publishedYear,
       genre,
-      publishedDate,
-      pages,
-      price, 
-      inStock, 
-      description,
     });
 
-    const savedBook = await newBook.save();
-    res.status(201).json(savedBook);
+    res.status(201).json(book);
   } catch (err) {
-    console.error(err);
-    if (err.name === "ValidationError") {
-      return res.status(400).json({ error: err.message });
-    }
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-// UPDATE an existing book
+// -------------------
+// @desc    Update book
+// @route   PUT /api/books/:id
+// @access  Private/Admin
+// -------------------
 exports.updateBook = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
-    const {
-      title,
-      author,
-      genre,
-      publishedDate,
-      pages,
-      price, 
-      inStock, 
-      description,
-    } = req.body;
+    const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
-    // Strict validation to allow false/0 values
-    const requiredFields = { title, author, genre, publishedDate, pages, price, inStock, description };
-    for (const [key, value] of Object.entries(requiredFields)) {
-      if (value === undefined || value === null || value === "") {
-        return res.status(400).json({ error: `${key} is required` });
-      }
+    if (!book) {
+      return res.status(404).json({ error: "Book not found" });
     }
 
-    const updatedBook = await Book.findByIdAndUpdate(
-      req.params.id,
-      { title, author, genre, publishedDate, pages, price, inStock, description },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedBook) return res.status(404).json({ error: "Book not found" });
-    res.status(200).json(updatedBook);
+    res.status(200).json(book);
   } catch (err) {
-    console.error(err);
-    if (err.name === "ValidationError") {
-      return res.status(400).json({ error: err.message });
-    }
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-// DELETE a book
+// -------------------
+// @desc    Delete book
+// @route   DELETE /api/books/:id
+// @access  Private/Admin
+// -------------------
 exports.deleteBook = async (req, res) => {
   try {
-    const deletedBook = await Book.findByIdAndDelete(req.params.id);
-    if (!deletedBook) return res.status(404).json({ error: "Book not found" });
+    const book = await Book.findByIdAndDelete(req.params.id);
+
+    if (!book) {
+      return res.status(404).json({ error: "Book not found" });
+    }
+
     res.status(200).json({ message: "Book deleted successfully" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Server error" });
   }
 };

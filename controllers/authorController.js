@@ -1,58 +1,104 @@
+const { validationResult } = require("express-validator");
 const Author = require("../models/Author");
 
-// GET /api/authors
-exports.getAuthors = async (req, res, next) => {
+// -------------------
+// @desc    Get all authors
+// @route   GET /api/authors
+// @access  Public
+// -------------------
+exports.getAuthors = async (req, res) => {
   try {
-    const authors = await Author.find().sort({ name: 1 });
-    res.json(authors);
+    const authors = await Author.find();
+    res.status(200).json(authors);
   } catch (err) {
-    next(err);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-// POST /api/authors
-exports.createAuthor = async (req, res, next) => {
+// -------------------
+// @desc    Get author by ID
+// @route   GET /api/authors/:id
+// @access  Public
+// -------------------
+exports.getAuthorById = async (req, res) => {
   try {
-    const { name, bio, birthdate, nationality, website } = req.body;
-    // Validate required fields
-    if (!name || !bio || !birthdate || !nationality || !website) {
-      return res.status(400).json({ error: "All fields (name, bio, birthdate, nationality, website) are required." });
+    const author = await Author.findById(req.params.id);
+
+    if (!author) {
+      return res.status(404).json({ error: "Author not found" });
     }
-    const author = await Author.create({ name, bio, birthdate, nationality, website });
+
+    res.status(200).json(author);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// -------------------
+// @desc    Create new author
+// @route   POST /api/authors
+// @access  Private/Admin
+// -------------------
+exports.createAuthor = async (req, res) => {
+  // Handle validation errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const { name, bio } = req.body;
+
+    const author = await Author.create({ name, bio });
     res.status(201).json(author);
   } catch (err) {
-    next(err);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-// PUT /api/authors/:id  (full replace)
-exports.updateAuthor = async (req, res, next) => {
+// -------------------
+// @desc    Update author
+// @route   PUT /api/authors/:id
+// @access  Private/Admin
+// -------------------
+exports.updateAuthor = async (req, res) => {
+  // Handle validation errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
-    const { name, bio, birthdate, nationality, website } = req.body;
-    if (!name || !bio || !birthdate || !nationality || !website) {
-      return res.status(400).json({ error: "All fields (name, bio, birthdate, nationality, website) are required for full replacement." });
+    const author = await Author.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!author) {
+      return res.status(404).json({ error: "Author not found" });
     }
 
-    const author = await Author.findByIdAndUpdate(
-      req.params.id,
-      { name, bio, birthdate, nationality, website },
-      { new: true, runValidators: true, overwrite: true }
-    );
-
-    if (!author) return res.status(404).json({ error: "Author not found" });
-    res.json(author);
+    res.status(200).json(author);
   } catch (err) {
-    next(err);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-// DELETE /api/authors/:id
-exports.deleteAuthor = async (req, res, next) => {
+// -------------------
+// @desc    Delete author
+// @route   DELETE /api/authors/:id
+// @access  Private/Admin
+// -------------------
+exports.deleteAuthor = async (req, res) => {
   try {
     const author = await Author.findByIdAndDelete(req.params.id);
-    if (!author) return res.status(404).json({ error: "Author not found" });
-    res.json({ message: "Author deleted" });
+
+    if (!author) {
+      return res.status(404).json({ error: "Author not found" });
+    }
+
+    res.status(200).json({ message: "Author deleted successfully" });
   } catch (err) {
-    next(err);
+    res.status(500).json({ error: "Server error" });
   }
 };

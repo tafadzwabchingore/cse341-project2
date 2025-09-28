@@ -1,78 +1,62 @@
-const express = require('express');
+const express = require("express");
+const { body, validationResult } = require("express-validator");
 const router = express.Router();
-const Author = require('../models/Author');
 
-// GET all authors
-router.get('/', async (req, res, next) => {
-  try {
-    const authors = await Author.find();
-    res.json(authors);
-  } catch (err) {
-    next(err);
+const {
+  getAuthors,
+  getAuthorById,
+  createAuthor,
+  updateAuthor,
+  deleteAuthor,
+} = require("../controllers/authorController");
+
+const { protect, authorize } = require("../middleware/authMiddleware");
+
+// Middleware to handle validation errors
+const validate = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
   }
-});
+  next();
+};
 
-// GET author by id
-router.get('/:id', async (req, res, next) => {
-  try {
-    const author = await Author.findById(req.params.id);
-    if (!author) return res.status(404).json({ error: 'Author not found' });
-    res.json(author);
-  } catch (err) {
-    next(err);
-  }
-});
+// Validation rules for creating/updating an author
+const authorValidationRules = [
+  body("name")
+    .notEmpty()
+    .withMessage("Name is required")
+    .isLength({ min: 2 })
+    .withMessage("Name must be at least 2 characters long"),
+  body("bio")
+    .optional()
+    .isLength({ max: 500 })
+    .withMessage("Bio must not exceed 500 characters"),
+];
 
-// POST new author
-router.post('/', async (req, res, next) => {
-  try {
-    const { name, bio, birthdate, nationality, website } = req.body;
+// Public routes
+router.get("/", getAuthors);
+router.get("/:id", getAuthorById);
 
-    // Validation
-    if (!name || !bio || !birthdate || !nationality || !website) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
+// Protected + admin-only routes
+router.post(
+  "/",
+  protect,
+  authorize("admin"),
+  authorValidationRules,
+  validate,
+  createAuthor
+);
 
-    const newAuthor = new Author({ name, bio, birthdate, nationality, website });
-    const savedAuthor = await newAuthor.save();
-    res.status(201).json(savedAuthor);
-  } catch (err) {
-    next(err);
-  }
-});
+router.put(
+  "/:id",
+  protect,
+  authorize("admin"),
+  authorValidationRules,
+  validate,
+  updateAuthor
+);
 
-// PUT update author
-router.put('/:id', async (req, res, next) => {
-  try {
-    const { name, bio, birthdate, nationality, website } = req.body;
-
-    // Validation
-    if (!name || !bio || !birthdate || !nationality || !website) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
-
-    const updatedAuthor = await Author.findByIdAndUpdate(
-      req.params.id,
-      { name, bio, birthdate, nationality, website },
-      { new: true }
-    );
-
-    if (!updatedAuthor) return res.status(404).json({ error: 'Author not found' });
-    res.json(updatedAuthor);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// DELETE author
-router.delete('/:id', async (req, res, next) => {
-  try {
-    const deletedAuthor = await Author.findByIdAndDelete(req.params.id);
-    if (!deletedAuthor) return res.status(404).json({ error: 'Author not found' });
-    res.json({ message: 'Author deleted successfully' });
-  } catch (err) {
-    next(err);
-  }
-});
+router.delete("/:id", protect, authorize("admin"), deleteAuthor);
 
 module.exports = router;

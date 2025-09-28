@@ -1,299 +1,272 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.0.0",
   "info": {
     "title": "Bookstore API",
-    "description": "API documentation for Authors and Books",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "description": "API documentation for the Bookstore project (Users, Authors, and Books)."
   },
-  "host": "project2-n69z.onrender.com",
-  "basePath": "/",
-  "schemes": [
-    "https"
+  "servers": [
+    {
+      "url": "http://localhost:3001",
+      "description": "Local server"
+    },
+    {
+      "url": "https://your-render-app.onrender.com",
+      "description": "Production server"
+    }
   ],
   "paths": {
-    "/api/authors/": {
-      "get": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
+    "/api/users/register": {
       "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
+        "summary": "Register a new user",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": { "type": "string", "example": "JohnDoe" },
+                  "email": { "type": "string", "example": "johndoe@example.com" },
+                  "password": { "type": "string", "example": "StrongPassword123!" }
                 },
-                "bio": {
-                  "example": "any"
-                },
-                "birthdate": {
-                  "example": "any"
-                },
-                "nationality": {
-                  "example": "any"
-                },
-                "website": {
-                  "example": "any"
-                }
+                "required": ["username", "email", "password"]
               }
             }
           }
-        ],
+        },
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "User registered successfully"
           },
-          "400": {
-            "description": "Bad Request"
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+    "/api/users/login": {
+      "post": {
+        "summary": "Login a user",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "example": "johndoe@example.com" },
+                  "password": { "type": "string", "example": "StrongPassword123!" }
+                },
+                "required": ["email", "password"]
+              }
+            }
           }
+        },
+        "responses": {
+          "200": { "description": "Login successful" },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
+    "/api/users/profile": {
+      "get": {
+        "summary": "Get logged-in user profile",
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "User profile retrieved" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+
+    "/api/authors": {
+      "get": {
+        "summary": "Get all authors",
+        "tags": ["Authors"],
+        "responses": {
+          "200": { "description": "List of authors" }
+        }
+      },
+      "post": {
+        "summary": "Create a new author",
+        "tags": ["Authors"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "Jane Austen" },
+                  "bio": { "type": "string", "example": "Famous English novelist." },
+                  "birthdate": { "type": "string", "format": "date", "example": "1775-12-16" },
+                  "nationality": { "type": "string", "example": "British" },
+                  "website": { "type": "string", "example": "https://janeausten.org" }
+                },
+                "required": ["name", "bio", "birthdate", "nationality", "website"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Author created" },
+          "400": { "description": "Validation error" }
         }
       }
     },
     "/api/authors/{id}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      },
       "put": {
-        "description": "",
+        "summary": "Update an author",
+        "tags": ["Authors"],
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                },
-                "bio": {
-                  "example": "any"
-                },
-                "birthdate": {
-                  "example": "any"
-                },
-                "nationality": {
-                  "example": "any"
-                },
-                "website": {
-                  "example": "any"
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "bio": { "type": "string" },
+                  "birthdate": { "type": "string", "format": "date" },
+                  "nationality": { "type": "string" },
+                  "website": { "type": "string" }
                 }
               }
             }
           }
-        ],
+        },
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "404": {
-            "description": "Not Found"
-          }
+          "200": { "description": "Author updated" },
+          "404": { "description": "Author not found" }
         }
       },
       "delete": {
-        "description": "",
+        "summary": "Delete an author",
+        "tags": ["Authors"],
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          }
+          "200": { "description": "Author deleted" },
+          "404": { "description": "Author not found" }
         }
       }
     },
-    "/api/books/": {
+
+    "/api/books": {
       "get": {
-        "description": "",
+        "summary": "Get all books",
+        "tags": ["Books"],
         "responses": {
-          "200": {
-            "description": "OK"
-          }
+          "200": { "description": "List of books" }
         }
       },
       "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "title": {
-                  "example": "any"
+        "summary": "Create a new book",
+        "tags": ["Books"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string", "example": "Pride and Prejudice" },
+                  "author": { "type": "string", "example": "60f7f71e9b1d8a34d8f9d9b5" },
+                  "genre": { "type": "string", "example": "Romance" },
+                  "publishedDate": { "type": "string", "format": "date", "example": "1813-01-28" },
+                  "pages": { "type": "integer", "example": 432 },
+                  "price": { "type": "number", "example": 12.99 },
+                  "inStock": { "type": "boolean", "example": true },
+                  "description": { "type": "string", "example": "A classic romantic novel." }
                 },
-                "author": {
-                  "example": "any"
-                },
-                "genre": {
-                  "example": "any"
-                },
-                "publishedDate": {
-                  "example": "any"
-                },
-                "pages": {
-                  "example": "any"
-                },
-                "price": {
-                  "example": "any"
-                },
-                "inStock": {
-                  "example": "any"
-                },
-                "description": {
-                  "example": "any"
-                }
+                "required": ["title", "author", "genre", "publishedDate", "pages", "price", "inStock", "description"]
               }
             }
           }
-        ],
+        },
         "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
+          "201": { "description": "Book created" },
+          "400": { "description": "Validation error" }
         }
       }
     },
     "/api/books/{id}": {
       "get": {
-        "description": "",
+        "summary": "Get a book by ID",
+        "tags": ["Books"],
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          }
+          "200": { "description": "Book found" },
+          "404": { "description": "Book not found" }
         }
       },
       "put": {
-        "description": "",
+        "summary": "Update a book",
+        "tags": ["Books"],
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "title": {
-                  "example": "any"
-                },
-                "author": {
-                  "example": "any"
-                },
-                "genre": {
-                  "example": "any"
-                },
-                "publishedDate": {
-                  "example": "any"
-                },
-                "pages": {
-                  "example": "any"
-                },
-                "price": {
-                  "example": "any"
-                },
-                "inStock": {
-                  "example": "any"
-                },
-                "description": {
-                  "example": "any"
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "author": { "type": "string" },
+                  "genre": { "type": "string" },
+                  "publishedDate": { "type": "string", "format": "date" },
+                  "pages": { "type": "integer" },
+                  "price": { "type": "number" },
+                  "inStock": { "type": "boolean" },
+                  "description": { "type": "string" }
                 }
               }
             }
           }
-        ],
+        },
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "404": {
-            "description": "Not Found"
-          }
+          "200": { "description": "Book updated" },
+          "404": { "description": "Book not found" }
         }
       },
       "delete": {
-        "description": "",
+        "summary": "Delete a book",
+        "tags": ["Books"],
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          }
+          "200": { "description": "Book deleted" },
+          "404": { "description": "Book not found" }
         }
       }
     }
-  }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "tags": [
+    { "name": "Users", "description": "User authentication & profile management" },
+    { "name": "Authors", "description": "Manage authors" },
+    { "name": "Books", "description": "Manage books" }
+  ]
 }
